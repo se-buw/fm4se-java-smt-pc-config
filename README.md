@@ -11,6 +11,8 @@ As a first step see the introduction video for using JavaSMT for our purposes [h
 
 Instead of encoding a fixed set of components, their prices, and constraints, (as shown in the JavaSMT video [after minute 19:50](https://youtu.be/9ptEo4apVcU?t=1190)) we are going to read them using an API provided in the project.
 
+**Implementation:** All the code you need to write is in method [configSolver(String[] args, int budgetIN)](/src/main/java/de/buw/fm4se/java_smt/pcconfig/PcConfigGeneratorAndSolver.java#L65). This method should return a model if a solution exists for a given budget, and empty otherwise. You can add as many helper methods as you need.
+
 - Components, their categories, and their prices can be read from files, i.e., they may change. 
   - The CSV formal for components is as follows: `category, name, price`, e.g. `CPU, i3, 113` or `motherboard, ASUS, 100`.
 - Constraints between components of kind `requires` and `excludes` (similar to those in feature models) can be read from another file. 
