@@ -5,10 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.TestMethodOrder;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class T1PcConfigurationTest {
   String[] args = {};
 
@@ -18,6 +22,7 @@ public class T1PcConfigurationTest {
    * @throws Exception
    */
   @Test
+  @Order(1)
   void testMinimumBudget() throws Exception {
     String model = PcConfigGeneratorAndSolver.configSolver(args, 266);
     assertTrue(model == "", "With minimum components, the budget needs to be at least 267 euro");
@@ -32,6 +37,7 @@ public class T1PcConfigurationTest {
    * @throws Exception
    */
   @Test
+  @Order(2)
   void testCPUBudget() throws Exception {
     String m1 = PcConfigGeneratorAndSolver.configSolver(args, 267);
     Map<String, String> components = getComponents(m1);
@@ -49,6 +55,7 @@ public class T1PcConfigurationTest {
    * @throws Exception
    */
   @Test
+  @Order(3)
   void testContainsCPU() throws Exception {
     String model = PcConfigGeneratorAndSolver.configSolver(args, 267);
     Map<String, String> components = getComponents(model);
@@ -69,6 +76,7 @@ public class T1PcConfigurationTest {
    * @throws Exception
    */
   @Test
+  @Order(4)
   void testContainsMotherboard() throws Exception {
     String model = PcConfigGeneratorAndSolver.configSolver(args, 267);
     Map<String, String> components = getComponents(model);
@@ -87,6 +95,7 @@ public class T1PcConfigurationTest {
    * @throws Exception
    */
   @Test
+  @Order(5)
   void testContainsRAM() throws Exception {
     String model = PcConfigGeneratorAndSolver.configSolver(args, 267);
     Map<String, String> components = getComponents(model);
@@ -107,6 +116,7 @@ public class T1PcConfigurationTest {
    * @throws Exception
    */
   @Test
+  @Order(6)
   void testContainsStorage() throws Exception {
     String model = PcConfigGeneratorAndSolver.configSolver(args, 267);
     Map<String, String> components = getComponents(model);
@@ -126,6 +136,7 @@ public class T1PcConfigurationTest {
    * @throws Exception
    */
   @Test
+  @Order(7)
   void testMotherboardConstraint() throws Exception {
     String model = PcConfigGeneratorAndSolver.configSolver(args, 1000);
     Map<String, String> components = getComponents(model);
@@ -147,6 +158,7 @@ public class T1PcConfigurationTest {
    * @throws Exception
    */
   @Test
+  @Order(8)
   void testGpuExclude() throws Exception {
     String model = PcConfigGeneratorAndSolver.configSolver(args, 1000);
     Map<String, String> components = getComponents(model);
@@ -165,6 +177,7 @@ public class T1PcConfigurationTest {
    * @throws Exception
    */
   @Test
+  @Order(9)
   void testMotherboardExclude() throws Exception {
     String model = PcConfigGeneratorAndSolver.configSolver(args, 1000);
     Map<String, String> components = getComponents(model);
