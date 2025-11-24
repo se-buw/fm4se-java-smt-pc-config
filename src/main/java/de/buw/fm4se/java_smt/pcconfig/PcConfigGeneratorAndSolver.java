@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.LinkedHashMap;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -26,17 +25,14 @@ import org.sosy_lab.java_smt.api.SolverContext;
 import org.sosy_lab.java_smt.api.SolverContext.ProverOptions;
 
 public class PcConfigGeneratorAndSolver {
-	public record ConfigSolverResult(String model, String smtLibFormula) {
-	}
-
 	public static void main(String[] args) throws Exception {
 
 		Scanner scan = new Scanner(System.in);
 		System.out.print("Please enter a budget: ");
 		int budget = scan.nextInt();
 		scan.close();
-		ConfigSolverResult result = configSolver(args, budget);
-		Map<String, String> components = getComponents(result.model());
+		String result = configSolver(args, budget);
+		Map<String, String> components = getComponents(result);
 		for (String key : components.keySet()) {
 			System.out.println(key + " " + components.get(key));
 		}
@@ -47,17 +43,15 @@ public class PcConfigGeneratorAndSolver {
 
 		// TODO implement the translation to SMT
 
-		
-
 		// Construct the full formula for SMT-LIB output and return it
 		return bmgr.and();
 	}
 
-	public static ConfigSolverResult configSolver(String[] args, int budgetIN) throws Exception {
+	public static String configSolver(String[] args, int budgetIN) throws Exception {
 		return configSolver(args, budgetIN, false);
 	}
 
-	public static ConfigSolverResult configSolver(String[] args, int budgetIN, boolean dump) throws Exception {
+	public static String configSolver(String[] args, int budgetIN, boolean dump) throws Exception {
 		System.out.println("\nSearching for a configuration costing at most " + budgetIN);
 
 		// Configuration
@@ -87,7 +81,7 @@ public class PcConfigGeneratorAndSolver {
 			if (!unsat) {
 				model = prover.getModel();
 				prover.close();
-				return new ConfigSolverResult(model.toString(), fmgr.dumpFormula(fullFormula).toString());
+				return model.toString();
 			} else {
 				System.out.println("unsat :-(");
 				prover.close();
@@ -96,7 +90,7 @@ public class PcConfigGeneratorAndSolver {
 			System.out.println("Exception: " + e);
 		}
 
-		return new ConfigSolverResult(model == null ? "" : model.toString(), fmgr.dumpFormula(fullFormula).toString());
+		return model == null ? "" : model.toString();
 	}
 
 	private static void printConstraints(String kind) {
