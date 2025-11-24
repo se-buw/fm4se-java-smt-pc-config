@@ -1,9 +1,19 @@
 {
   "tests": [
     {
-      "name": "Task: PC Configuration",
+      "name": "Task 1: PC Configuration",
       "setup": "chmod +x gradlew",
       "run": "./gradlew test --tests 'T1PcConfigurationTest' --console=rich",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    },
+    {
+      "name": "Task 2: PC Redundancy Analysis",
+      "setup": "chmod +x gradlew",
+      "run": "./gradlew test --tests 'T2RedundancyCheckingTest' --console=rich",
       "input": "",
       "output": "",
       "comparison": "included",
