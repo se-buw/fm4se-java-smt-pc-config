@@ -23,7 +23,8 @@ public class T2RedundancyCheckingTest {
     @Order(1)
     void testDifferentBudgets() {
         try {
-            PcConfigGeneratorAndSolver.configSolver(args, 100, true);
+            PcConfigGeneratorAndSolver.configSolver(args, 266, true);
+            PcConfigGeneratorAndSolver.configSolver(args, 267, true);
             PcConfigGeneratorAndSolver.configSolver(args, 500, true);
             PcConfigGeneratorAndSolver.configSolver(args, 1000, true);
         } catch (Exception e) {
