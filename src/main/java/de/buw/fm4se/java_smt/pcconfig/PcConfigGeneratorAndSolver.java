@@ -45,7 +45,7 @@ public class PcConfigGeneratorAndSolver {
 	private static BooleanFormula createConfigFormula(BooleanFormulaManager bmgr, IntegerFormulaManager imgr,
 			int budgetIN) {
 
-		// TODO implement the translation to SMT and the interpretation of the model
+		// TODO implement the translation to SMT
 
 		
 
