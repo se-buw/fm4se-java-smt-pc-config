@@ -24,11 +24,11 @@ public class T1PcConfigurationTest {
   @Test
   @Order(1)
   void testMinimumBudget() throws Exception {
-    String model = PcConfigGeneratorAndSolver.configSolver(args, 266);
-    assertTrue(model == "", "With minimum components, the budget needs to be at least 267 euro");
+    PcConfigGeneratorAndSolver.ConfigSolverResult result = PcConfigGeneratorAndSolver.configSolver(args, 266);
+    assertTrue(result.model().isEmpty(), "With minimum components, the budget needs to be at least 267 euro");
 
-    String m2 = PcConfigGeneratorAndSolver.configSolver(args, 267);
-    assertFalse(m2 == "", "With minimum components, 267 euro is enough");
+    PcConfigGeneratorAndSolver.ConfigSolverResult result2 = PcConfigGeneratorAndSolver.configSolver(args, 267);
+    assertFalse(result2.model().isEmpty(), "With minimum components, 267 euro is enough");
   }
 
   /**
@@ -39,8 +39,8 @@ public class T1PcConfigurationTest {
   @Test
   @Order(2)
   void testCPUBudget() throws Exception {
-    String m1 = PcConfigGeneratorAndSolver.configSolver(args, 267);
-    Map<String, String> components = getComponents(m1);
+    PcConfigGeneratorAndSolver.ConfigSolverResult result = PcConfigGeneratorAndSolver.configSolver(args, 267);
+    Map<String, String> components = getComponents(result.model());
 
     assertFalse(components.containsKey("i7") && components.get("i7").equals("true"),
         "With €267, i7 is not possible");
@@ -57,8 +57,8 @@ public class T1PcConfigurationTest {
   @Test
   @Order(3)
   void testContainsCPU() throws Exception {
-    String model = PcConfigGeneratorAndSolver.configSolver(args, 267);
-    Map<String, String> components = getComponents(model);
+    PcConfigGeneratorAndSolver.ConfigSolverResult result = PcConfigGeneratorAndSolver.configSolver(args, 267);
+    Map<String, String> components = getComponents(result.model());
     try {
       assertTrue(components.get("i3").equals("true")
           || components.get("i5").equals("true")
@@ -78,8 +78,8 @@ public class T1PcConfigurationTest {
   @Test
   @Order(4)
   void testContainsMotherboard() throws Exception {
-    String model = PcConfigGeneratorAndSolver.configSolver(args, 267);
-    Map<String, String> components = getComponents(model);
+    PcConfigGeneratorAndSolver.ConfigSolverResult result = PcConfigGeneratorAndSolver.configSolver(args, 267);
+    Map<String, String> components = getComponents(result.model());
     try {
       assertTrue(components.get("gigabyteIntel").equals("true")
           || components.get("msiAMD").equals("true"),
@@ -97,8 +97,8 @@ public class T1PcConfigurationTest {
   @Test
   @Order(5)
   void testContainsRAM() throws Exception {
-    String model = PcConfigGeneratorAndSolver.configSolver(args, 267);
-    Map<String, String> components = getComponents(model);
+    PcConfigGeneratorAndSolver.ConfigSolverResult result = PcConfigGeneratorAndSolver.configSolver(args, 267);
+    Map<String, String> components = getComponents(result.model());
 
     try {
       assertTrue(components.get("8GB").equals("true")
@@ -118,14 +118,14 @@ public class T1PcConfigurationTest {
   @Test
   @Order(6)
   void testContainsStorage() throws Exception {
-    String model = PcConfigGeneratorAndSolver.configSolver(args, 267);
-    Map<String, String> components = getComponents(model);
-    try{
+    PcConfigGeneratorAndSolver.ConfigSolverResult result = PcConfigGeneratorAndSolver.configSolver(args, 267);
+    Map<String, String> components = getComponents(result.model());
+    try {
       assertTrue(components.get("hdd1tb").equals("true")
           || components.get("ssd1tb").equals("true")
           || components.get("ssd2tb").equals("true"),
           "Storage is a minimum component");
-    }catch (Exception e) {
+    } catch (Exception e) {
       fail("The encoding is most likely unsatisfiable with the minimum budget");
     }
   }
@@ -138,8 +138,8 @@ public class T1PcConfigurationTest {
   @Test
   @Order(7)
   void testMotherboardConstraint() throws Exception {
-    String model = PcConfigGeneratorAndSolver.configSolver(args, 1000);
-    Map<String, String> components = getComponents(model);
+    PcConfigGeneratorAndSolver.ConfigSolverResult result = PcConfigGeneratorAndSolver.configSolver(args, 1000);
+    Map<String, String> components = getComponents(result.model());
     if (components.containsKey("i3") && components.get("i3").equals("true")) {
       assertTrue(components.get("gigabyteIntel").equals("true"),
           "Intel processor needs a Intel motherboard");
@@ -160,8 +160,8 @@ public class T1PcConfigurationTest {
   @Test
   @Order(8)
   void testGpuExclude() throws Exception {
-    String model = PcConfigGeneratorAndSolver.configSolver(args, 1000);
-    Map<String, String> components = getComponents(model);
+    PcConfigGeneratorAndSolver.ConfigSolverResult result = PcConfigGeneratorAndSolver.configSolver(args, 1000);
+    Map<String, String> components = getComponents(result.model());
     if (components.containsKey("RTX") && components.get("RTX").equals("true")) {
       assertFalse(components.containsKey("GTX") && components.get("GTX").equals("true"),
           "If RTX is selected, GTX should not be selected");
@@ -179,8 +179,8 @@ public class T1PcConfigurationTest {
   @Test
   @Order(9)
   void testMotherboardExclude() throws Exception {
-    String model = PcConfigGeneratorAndSolver.configSolver(args, 1000);
-    Map<String, String> components = getComponents(model);
+    PcConfigGeneratorAndSolver.ConfigSolverResult result = PcConfigGeneratorAndSolver.configSolver(args, 1000);
+    Map<String, String> components = getComponents(result.model());
     if (components.containsKey("msiAMD") && components.get("msiAMD").equals("true")) {
       assertFalse(components.containsKey("gigabyteIntel") && components.get("gigabyteIntel").equals("true"),
           "If MSI is selected, Gigabyte should not be selected");

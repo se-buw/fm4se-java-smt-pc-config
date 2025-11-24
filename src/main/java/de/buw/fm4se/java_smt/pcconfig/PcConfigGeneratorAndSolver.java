@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.LinkedHashMap;
+
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -18,61 +20,89 @@ import org.sosy_lab.java_smt.api.BooleanFormulaManager;
 import org.sosy_lab.java_smt.api.FormulaManager;
 import org.sosy_lab.java_smt.api.IntegerFormulaManager;
 import org.sosy_lab.java_smt.api.Model;
-import org.sosy_lab.java_smt.api.Model.ValueAssignment;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 import org.sosy_lab.java_smt.api.ProverEnvironment;
 import org.sosy_lab.java_smt.api.SolverContext;
 import org.sosy_lab.java_smt.api.SolverContext.ProverOptions;
 
-
 public class PcConfigGeneratorAndSolver {
+	public record ConfigSolverResult(String model, String smtLibFormula) {
+	}
 
 	public static void main(String[] args) throws Exception {
-		
+
 		Scanner scan = new Scanner(System.in);
 		System.out.print("Please enter a budget: ");
 		int budget = scan.nextInt();
 		scan.close();
-
-		// INFO this is just to see how to access the information from the files
-		System.out.println("\nAvailable components:");
-		printComponents("CPU");
-		printComponents("motherboard");
-		printComponents("RAM");
-		printComponents("GPU");
-		printComponents("storage");
-		printComponents("opticalDrive");
-		printComponents("cooler");
-		
-		System.out.println("\nConstraints:");
-		printConstraints("requires");
-		printConstraints("excludes");
-		
-		System.out.print("\nSearching for a configuration costing at most " + budget);
-
-		String model = configSolver(args, budget);
-		System.out.println(model);
+		ConfigSolverResult result = configSolver(args, budget);
+		Map<String, String> components = getComponents(result.model());
+		for (String key : components.keySet()) {
+			System.out.println(key + " " + components.get(key));
+		}
 	}
 
-	/**
-	 * Take budget as input and return a model if the constraints are satisfiable (i.e. the budget is sufficient)
-	 * Otherwise, return an empty string
-	 * @param args
-	 * @param budgetIN
-	 * @return
-	 * @throws Exception
-	 */
-	public static String configSolver(String[] args, int budgetIN) throws Exception{
-		// TODO: implement the translation to SMT and the interpretation of the model
+	private static BooleanFormula createConfigFormula(BooleanFormulaManager bmgr, IntegerFormulaManager imgr,
+			int budgetIN) {
+
+		// TODO implement the translation to SMT and the interpretation of the model
+
 		
-		
-		return "";
+
+		// Construct the full formula for SMT-LIB output and return it
+		return bmgr.and();
+	}
+
+	public static ConfigSolverResult configSolver(String[] args, int budgetIN) throws Exception {
+		return configSolver(args, budgetIN, false);
+	}
+
+	public static ConfigSolverResult configSolver(String[] args, int budgetIN, boolean dump) throws Exception {
+		System.out.println("\nSearching for a configuration costing at most " + budgetIN);
+
+		// Configuration
+		Configuration config = Configuration.fromCmdLineArguments(args);
+		LogManager logger = BasicLogManager.create(config);
+		ShutdownManager shutdown = ShutdownManager.create();
+		SolverContext context = SolverContextFactory.createSolverContext(config, logger, shutdown.getNotifier(),
+				Solvers.PRINCESS);
+		FormulaManager fmgr = context.getFormulaManager();
+		IntegerFormulaManager imgr = fmgr.getIntegerFormulaManager();
+		BooleanFormulaManager bmgr = fmgr.getBooleanFormulaManager();
+
+		// Create the configuration formula
+		BooleanFormula fullFormula = createConfigFormula(bmgr, imgr, budgetIN);
+
+		if (dump) {
+			SmtLibFormulaWriter.dumpFormula(fullFormula, fmgr, "task-2/budget" + budgetIN + ".smt2");
+		}
+
+		Model model = null;
+
+		// feed to the solver
+		try (ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_MODELS)) {
+			prover.addConstraint(fullFormula);
+
+			boolean unsat = prover.isUnsat();
+			if (!unsat) {
+				model = prover.getModel();
+				prover.close();
+				return new ConfigSolverResult(model.toString(), fmgr.dumpFormula(fullFormula).toString());
+			} else {
+				System.out.println("unsat :-(");
+				prover.close();
+			}
+		} catch (Exception e) {
+			System.out.println("Exception: " + e);
+		}
+
+		return new ConfigSolverResult(model == null ? "" : model.toString(), fmgr.dumpFormula(fullFormula).toString());
 	}
 
 	private static void printConstraints(String kind) {
 		for (String[] pair : PcConfigReader.getConstraints(kind)) {
 			System.out.println(pair[0] + " " + kind + " " + pair[1]);
-		}		
+		}
 	}
 
 	private static void printComponents(String type) {
@@ -80,6 +110,27 @@ public class PcConfigGeneratorAndSolver {
 		for (String cmp : compoents.keySet()) {
 			System.out.println(cmp + " costs " + compoents.get(cmp));
 		}
+	}
+
+	private static Map<String, String> getComponents(String model) {
+		model = model.replaceAll("[{}]", "");
+		String[] ls = model.split(",");
+		ls = Arrays.stream(ls).map(String::strip).toArray(String[]::new);
+
+		Map<String, String> componentDict = new LinkedHashMap<>();
+
+		try {
+			for (String f : ls) {
+				String[] parts = f.split(" -> ");
+				if (parts.length == 2) {
+					componentDict.put(parts[0], parts[1]);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return componentDict;
 	}
 
 }
