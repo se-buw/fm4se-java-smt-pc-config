@@ -27,10 +27,24 @@ import org.sosy_lab.java_smt.api.SolverContext.ProverOptions;
 public class PcConfigGeneratorAndSolver {
 	public static void main(String[] args) throws Exception {
 
+		// INFO this is just to see how to access the information from the files
+		System.out.println("\nAvailable components:");
+		printComponents("CPU");
+		printComponents("motherboard");
+		printComponents("RAM");
+		printComponents("GPU");
+		printComponents("storage");
+		printComponents("opticalDrive");
+		printComponents("cooler");
+		
+		System.out.println("\nConstraints:");
+		printConstraints("requires");
+		printConstraints("excludes");
 		Scanner scan = new Scanner(System.in);
 		System.out.print("Please enter a budget: ");
 		int budget = scan.nextInt();
 		scan.close();
+
 		String result = configSolver(args, budget);
 		Map<String, String> components = getComponents(result);
 		for (String key : components.keySet()) {
@@ -100,12 +114,18 @@ public class PcConfigGeneratorAndSolver {
 	}
 
 	private static void printComponents(String type) {
-		Map<String, Integer> compoents = PcConfigReader.getComponents(type);
-		for (String cmp : compoents.keySet()) {
-			System.out.println(cmp + " costs " + compoents.get(cmp));
+		Map<String, Integer> components = PcConfigReader.getComponents(type);
+		for (String cmp : components.keySet()) {
+			System.out.println(cmp + " costs " + components.get(cmp));
 		}
 	}
 
+	/**
+	 * Extracts components from the JavaSMT model string.
+	 * 
+	 * @param model
+	 * @return A map of component types to their selected components.
+	 */
 	private static Map<String, String> getComponents(String model) {
 		model = model.replaceAll("[{}]", "");
 		String[] ls = model.split(",");
