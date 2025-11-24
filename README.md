@@ -14,7 +14,7 @@ For this task you are asked to build a PC configuration SMT problem and extract 
 > [!TIP]
 > Instead of encoding a fixed set of components, their prices, and constraints, (as shown in the JavaSMT video [after minute 19:50](https://youtu.be/9ptEo4apVcU?t=1190)) we are going to read them using an API provided in the project.
 
-**Implementation:** All the code you need to write is in method [createConfigFormula(BooleanFormulaManager bmgr, IntegerFormulaManager imgr, int budgetIN)](/src/main/java/de/buw/fm4se/java_smt/pcconfig/PcConfigGeneratorAndSolver.java#L41). This method should return a full formula representing the PC configuration problem as described below. You can add as many helper methods as you need.
+**Implementation:** All the code you need to write is in method [createConfigFormula(BooleanFormulaManager bmgr, IntegerFormulaManager imgr, int budgetIN)](/src/main/java/de/buw/fm4se/java_smt/pcconfig/PcConfigGeneratorAndSolver.java#L55). This method should return a full formula representing the PC configuration problem as described below. You can add as many helper methods as you need.
 
 - Components, their categories, and their prices can be read from files, i.e., they may change.
   - The CSV formal for components is as follows: `category, name, price`, e.g. `CPU, i3, 113` or `motherboard, ASUS, 100`.
@@ -26,7 +26,7 @@ For this task you are asked to build a PC configuration SMT problem and extract 
 - The selected components of a configuration are listed by the program, if a configuration within the budget exists.
 
 > [!TIP]
-> A video going through the code is available from [https://youtu.be/Di2HA49KdLw](https://youtu.be/Di2HA49KdLw).
+> A video going through the code is available from [https://youtu.be/7Zxe99i_7EU](https://youtu.be/7Zxe99i_7EU).
 
 ## Task 2: Redundancy Analysis
 
